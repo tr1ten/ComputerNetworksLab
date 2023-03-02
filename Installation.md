@@ -11,7 +11,7 @@ wsl --update
 ```
 
 ## Install Ubuntu on WSL2
-Open Microsoft Store and search for Ubuntu. Install it.
+Open Microsoft Store and search for Ubuntu 20.4 (later releases don't work). Install it.
 
 
 ## Install ns2 in Ubuntu
