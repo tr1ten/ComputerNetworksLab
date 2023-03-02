@@ -68,8 +68,6 @@ $ftp0 attach-agent $tcp0
 $ns at 0.1 "$ftp0 start"
 $ns at 10 "$ftp0 stop"
 
-# $ns at 0.2 "$cbr0 start"
-# $ns at 10 "$cbr0 stop"
 $ns at 10.1 "finish"
 
 $ns run
