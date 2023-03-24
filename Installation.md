@@ -66,3 +66,8 @@ ns ex.tcl
 
 If everything is installed correctly, you should see the expected output.
 
+## Troubleshooting
+## Xgraph not found
+### Error: `libgtk2.0-0` not found
+
+`apt-get install libgtk2.0-0`
