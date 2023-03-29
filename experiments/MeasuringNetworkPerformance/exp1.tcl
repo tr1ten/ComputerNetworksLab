@@ -1,7 +1,7 @@
 set ns [new Simulator]
-set namfile [open ex_05a.nam w]
+set namfile [open lab05.nam w]
 $ns namtrace-all $namfile
-set tracefile [open ex_05a.tr w]
+set tracefile [open lab05.tr w]
 $ns trace-all $tracefile
 Agent/TCP set packetSize_ 1460
 set n0 [$ns node]
@@ -58,9 +58,21 @@ proc finish {} {
     $ns flush-trace
     close $namfile
     close $tracefile
-    exec nam ex_05a.nam &
-    exec xgraph -bb -tk -x Time -x Bytes ex05a.data -bg white &
-    exec xgraph -bb -tk -x Time -y packets ex05a_packets.data -bg white &
+    exec nam lab05.nam &
+    
+    set awkCode {
+        BEGIN{}
+        {
+            # lab4.data
+            # lab4_packets.data
+            
+        }
+        END{}
+    }
+    exec awk $awkCode lab05.tr
+    exec xgraph -bb -tk -x Time -x Bytes lab4.data -bg white &
+    exec xgraph -bb -tk -x Time -y packets lab4_packets.data -bg white &
+
     exit 0
 }
 $ns at 100.0 "finish"
