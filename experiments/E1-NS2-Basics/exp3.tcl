@@ -1,52 +1,38 @@
-# Consider a client and server. The server is running an FTP application(over TCP).The
-# client sends the request to download a file of size 10 MB from the server. Write a script to
-# simulate this scenario. Let node 0 be the server and node 1 be the client. TCP packet size is
-# 1500 B . Assume typical values for other parameters.
-
 set ns [new Simulator]
-
-$ns color 0 blue
-$ns color 1 red
-
-set tr [open "out.tr" w]
-$ns trace-all $tr
-
-set nf [open "out.nam" w]
+$ns color 1 Blue
+$ns color 2 Red
+set nf [open out.nam w]
 $ns namtrace-all $nf
-
+set outfile [open "bytesReceived.xg" w]
+proc plotWindow {tcpSource outfile} {
+    global ns
+    set now [$ns now]
+    set cwnd [$tcpSource set cwnd_]
+    puts $outfile "$now $cwnd"
+    $ns at [expr $now+0.1] "plotWindow $tcpSource $outfile"
+}
 proc finish {} {
-    global ns nf tr
+    global ns nf
     $ns flush-trace
     close $nf
-    close $tr
     exec nam out.nam &
+    exec xgraph bytesReceived.xg 500x500 &
     exit 0
 }
-set server [$ns node]
-set client [$ns node]
-
-$ns duplex-link $server $client 5Mb 10ms DropTail
-
-set  tcp1 [new Agent/TCP]
+set n0 [$ns node]
+set n1 [$ns node]
+$ns duplex-link $n0 $n1 10Mb 10ms DropTail
+set tcp [new Agent/TCP]
+$ns attach-agent $n0 $tcp
 set sink [new Agent/TCPSink]
-
-$tcp1 set packetSize_ 1500
-
-$ns attach-agent $server $tcp1
-$ns attach-agent $client $sink
-
-$ns connect $tcp1 $sink
-
+$ns attach-agent $n1 $sink
+$ns connect $tcp $sink
+$tcp set fid_ 1
 set ftp [new Application/FTP]
-
-$ftp attach-agent $tcp1
-
-$ns at 0.5 "$ftp start"
-$ns at 2.5 "$ftp stop"
-$ns at 2.6 "finish"
-
+$ftp attach-agent $tcp
+$ftp set type_ FTP
+$ns at 0.0 "plotWindow $tcp $outfile"
+$ns at 1.0 "$ftp start"
+$ns at 4.0 "$ftp stop"
+$ns at 6.0 "finish"
 $ns run
-
-
-
-
